@@ -1,11 +1,11 @@
 <div align="center">
 
-<img src="docs/images/logo.svg" alt="Logo do Kubo" width="88">
+<img src="docs/images/logo.svg" alt="Kubo logo" width="88">
 
 # Kubo
 
-**App de finanças pessoais com um analista de IA dentro.**
-Carteira, gastos e aportes em um só lugar, com o Claude lendo os dados e devolvendo briefings, memos e ideias para estudar.
+**A personal finance app with an AI analyst built in.**
+Portfolio, spending and monthly contributions in one place, with Claude reading the data and writing back briefings, memos and ideas to research.
 
 ![Next.js](https://img.shields.io/badge/Next.js_16-0F1114?style=for-the-badge&logo=nextdotjs&logoColor=C5F23A)
 ![TypeScript](https://img.shields.io/badge/TypeScript-0F1114?style=for-the-badge&logo=typescript&logoColor=C5F23A)
@@ -13,218 +13,223 @@ Carteira, gastos e aportes em um só lugar, com o Claude lendo os dados e devolv
 ![Vercel](https://img.shields.io/badge/Vercel-0F1114?style=for-the-badge&logo=vercel&logoColor=C5F23A)
 ![MCP](https://img.shields.io/badge/MCP_·_Claude-0F1114?style=for-the-badge&logo=anthropic&logoColor=C5F23A)
 
+<br>
+
+[![English](https://img.shields.io/badge/English-C5F23A?style=for-the-badge)](README.md)
+[![Português](https://img.shields.io/badge/Português-30353D?style=for-the-badge)](README.pt-BR.md)
+
 </div>
 
 <br>
 
-![Kubo na web e no celular](docs/images/hero.png)
+![Kubo on web and mobile](docs/images/hero.png)
 
-> As imagens são do protótipo de alta fidelidade e usam dados fictícios.
+> Screenshots come from the high-fidelity prototype and use fictional data. The interface is in Brazilian Portuguese.
 
-## Sumário
+## Contents
 
-- [Sobre o projeto](#sobre-o-projeto)
-- [Destaques](#destaques)
-- [Telas](#telas)
-- [Arquitetura](#arquitetura)
-- [Integração com o Claude (MCP)](#integração-com-o-claude-mcp)
-- [Decisões de engenharia](#decisões-de-engenharia)
-- [Stack e fontes de dados](#stack-e-fontes-de-dados)
+- [About](#about)
+- [Highlights](#highlights)
+- [Screens](#screens)
+- [Architecture](#architecture)
+- [Claude integration (MCP)](#claude-integration-mcp)
+- [Engineering decisions](#engineering-decisions)
+- [Stack and data sources](#stack-and-data-sources)
 - [Design](#design)
-- [Status e próximos passos](#status-e-próximos-passos)
-- [Autor](#autor)
+- [Status and roadmap](#status-and-roadmap)
+- [Author](#author)
 
-## Sobre o projeto
+## About
 
-O Kubo nasceu de um problema meu: o dinheiro estava espalhado entre banco, cartões, corretora brasileira, conta nos EUA e cripto, e nenhum app juntava tudo **e** ajudava a pensar sobre isso.
+Kubo started with a problem of my own: my money was spread across a bank account, credit cards, a Brazilian brokerage, a US account and crypto, and no app brought it all together **and** helped me think it through.
 
-Ele faz três coisas:
+It does three things:
 
-1. **Junta os dados.** Contas e cartões chegam pelo Open Finance; cotações da B3, dos EUA e de cripto, indicadores do Banco Central e comunicados da CVM chegam por coletas automáticas.
-2. **Organiza.** Patrimônio, estrutura da carteira contra a meta do perfil, gastos por categoria, gastos fixos e rotina de aportes.
-3. **Conversa com a IA.** O próprio servidor é um conector MCP: o Claude lê a carteira e o mercado e salva de volta no app o briefing da semana, a triagem das notícias, memos de ativos e ideias para o próximo aporte.
+1. **Brings the data together.** Bank accounts and cards come in through Open Finance; quotes from B3 (the Brazilian exchange), US markets and crypto, Central Bank indicators and CVM (Brazil's SEC) filings arrive through scheduled jobs.
+2. **Organizes it.** Net worth, portfolio allocation versus the investor profile's targets, spending by category, recurring bills and a contribution routine.
+3. **Talks to the AI.** The server itself is an MCP connector: Claude reads the portfolio and the market, then saves back to the app the weekly briefing, news triage, asset memos and ideas for the next contribution.
 
-Uma regra atravessa o produto inteiro: **o Kubo nunca dá ordem de compra ou venda.** Ele organiza fatos, riscos e o que ainda está em aberto, sempre com fonte e data; a decisão fica com a pessoa.
+One rule runs through the whole product: **Kubo never tells you to buy or sell.** It lays out facts, risks and open questions, always with a source and a date; the decision stays with the user.
 
-E uma restrição de projeto: **custo zero**. Tudo roda em planos gratuitos, o que moldou boa parte da engenharia (veja [Decisões de engenharia](#decisões-de-engenharia)).
+And one design constraint: **zero cost**. Everything runs on free tiers, which shaped much of the engineering (see [Engineering decisions](#engineering-decisions)).
 
-## Destaques
+## Highlights
 
 | | |
 |---|---|
-| 🧠 **Analista de IA integrado** | Servidor MCP próprio com 14 ferramentas (8 de leitura, 6 de escrita) e OAuth 2.1 com PKCE |
-| 🏦 **Open Finance** | Contas e cartões sincronizados via Pluggy, com importação OFX/CSV como plano B |
-| 📊 **Carteira multimercado** | Ações, FIIs, ETFs, Tesouro, ativos dos EUA e cripto em uma visão só, com plano de rebalanceamento **só com aportes**, sem vender |
-| 🧾 **Gastos que fazem sentido** | Renomear e recategorizar lançamentos ("PIX p/ fulano" vira "Futebol") com regra "aplicar a todos"; fatura, transferências e aplicações não contam como gasto |
-| 📰 **Notícias com triagem** | Fatos relevantes da CVM e notícias dos EUA classificadas em *manter / observar / ignorar*, com o motivo ligado à carteira |
-| 📚 **Trilhas de aprendizado** | 6 trilhas curtas sobre orçamento, reserva, renda fixa, ações e mais |
-| 🔒 **Seguro por padrão** | PIN com bloqueio progressivo, chaves só no servidor, foto e dados atrás de sessão |
-| 📱 **PWA** | Instalável no celular, tema escuro e claro, modo privacidade que esconde valores |
+| 🧠 **Built-in AI analyst** | Custom MCP server with 14 tools (8 read, 6 write) and OAuth 2.1 with PKCE |
+| 🏦 **Open Finance** | Accounts and cards synced through Pluggy, with OFX/CSV import as a fallback |
+| 📊 **Multi-market portfolio** | Brazilian stocks, REITs, ETFs, treasury bonds, US assets and crypto in one view, with a rebalancing plan that uses **only new contributions**, no selling |
+| 🧾 **Spending that makes sense** | Rename and recategorize transactions ("PIX to John" becomes "Soccer") with an "apply to all" rule; card bill payments, transfers and investments don't count as spending |
+| 📰 **Triaged news** | CVM material facts and US news sorted into *keep / watch / ignore*, each with a reason tied to the portfolio |
+| 📚 **Learning tracks** | 6 short tracks on budgeting, emergency funds, fixed income, stocks and more |
+| 🔒 **Secure by default** | PIN with progressive lockout, API keys only on the server, profile photo and data behind a session |
+| 📱 **PWA** | Installable on the phone, dark and light themes, privacy mode that hides amounts |
 
-## Telas
+## Screens
 
-### Celular
+### Mobile
 
-![Telas do Kubo no celular: Início, Carteira, Ativos e Conversa](docs/images/mobile-principais.png)
+![Kubo on mobile: Home, Portfolio, Assets and Conversation](docs/images/mobile-principais.png)
 
-<sub>Início · Carteira · Ativos · Conversa</sub>
+<sub>Home · Portfolio · Assets · Conversation</sub>
 
-![Mais telas do Kubo no celular: Comparar, Aprender, Perfil e Início no tema claro](docs/images/mobile-mais-telas.png)
+![More Kubo mobile screens: Compare, Learn, Profile and Home in light theme](docs/images/mobile-mais-telas.png)
 
-<sub>Comparar · Aprender · Perfil · Início no tema claro</sub>
+<sub>Compare · Learn · Profile · Home in light theme</sub>
 
 ### Web
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/images/web-inicio.png" alt="Kubo na web: tela Início"></td>
-    <td width="50%"><img src="docs/images/web-carteira.png" alt="Kubo na web: tela Carteira"><br><br><img src="docs/images/web-inicio-claro.png" alt="Kubo na web: Início no tema claro"></td>
+    <td width="50%"><img src="docs/images/web-inicio.png" alt="Kubo on the web: Home"></td>
+    <td width="50%"><img src="docs/images/web-carteira.png" alt="Kubo on the web: Portfolio"><br><br><img src="docs/images/web-inicio-claro.png" alt="Kubo on the web: Home in light theme"></td>
   </tr>
   <tr>
-    <td align="center"><sub>Início: patrimônio, briefing, notícias, gastos e aportes</sub></td>
-    <td align="center"><sub>Carteira (atual × meta e rebalanceamento) e Início no tema claro</sub></td>
+    <td align="center"><sub>Home: net worth, briefing, news, spending and contributions</sub></td>
+    <td align="center"><sub>Portfolio (current × target and rebalancing) and Home in light theme</sub></td>
   </tr>
 </table>
 
-## Arquitetura
+## Architecture
 
 ```mermaid
 flowchart LR
-    subgraph Usuário
-        PWA["App Kubo<br/>(PWA · web e celular)"]
-        Claude["Claude<br/>(Projeto Kubo)"]
+    subgraph User
+        PWA["Kubo app<br/>(PWA · web and mobile)"]
+        Claude["Claude<br/>(Kubo Project)"]
     end
 
     subgraph Vercel["Vercel · Next.js 16"]
-        UI["Telas<br/>(App Router)"]
-        API["API interna<br/>/api/*"]
-        MCP["Conector MCP<br/>/api/mcp · OAuth 2.1"]
-        CRON["Coletas agendadas<br/>cron diário + janelas de notícias"]
+        UI["Screens<br/>(App Router)"]
+        API["Internal API<br/>/api/*"]
+        MCP["MCP connector<br/>/api/mcp · OAuth 2.1"]
+        CRON["Scheduled jobs<br/>daily cron + news windows"]
     end
 
     DB[("Postgres<br/>Neon")]
 
-    subgraph Fontes["Fontes gratuitas"]
+    subgraph Sources["Free data sources"]
         Pluggy["Pluggy<br/>Open Finance"]
-        Mercado["brapi · Finnhub · Tiingo<br/>CoinGecko"]
-        Oficiais["Banco Central · CVM"]
+        Market["brapi · Finnhub · Tiingo<br/>CoinGecko"]
+        Official["Central Bank · CVM"]
     end
 
-    PWA -->|PIN + sessão| UI --> API --> DB
-    Claude <-->|ler / salvar| MCP --> DB
+    PWA -->|PIN + session| UI --> API --> DB
+    Claude <-->|read / save| MCP --> DB
     CRON --> DB
-    CRON --> Pluggy & Mercado & Oficiais
-    API -->|cotação sob demanda + cache| Mercado
+    CRON --> Pluggy & Market & Official
+    API -->|on-demand quotes + cache| Market
 ```
 
-**Como o servidor está organizado**
+**How the server is organized**
 
 ```
-app/                 telas (App Router) e rotas de API
-  api/mcp/           conector do Claude
-  api/oauth/         registro dinâmico, autorização, token e revogação (OAuth 2.1)
-  api/cron/diario/   coleta diária
+app/                 screens (App Router) and API routes
+  api/mcp/           Claude connector
+  api/oauth/         dynamic registration, authorization, token and revocation (OAuth 2.1)
+  api/cron/diario/   daily data collection
 src/
-  domain/            regras puras: carteira e plano de aportes, gastos e regras de renomear, panorama
-  sources/           clientes das APIs (brapi, Finnhub, Tiingo, CoinGecko, BCB, CVM, Pluggy)
-  services/          casos de uso usados pelas telas e pelo conector
-  mcp/               definição das ferramentas e autenticação
-  jobs/              coletas (cada etapa isolada: se uma fonte cai, as outras seguem)
-  db/                schema Drizzle
-drizzle/             migrações SQL (aplicadas sozinhas a cada deploy)
-tests/               testes com Postgres em memória, sem internet
+  domain/            pure rules: portfolio and contribution plan, spending and rename rules, market overview
+  sources/           API clients (brapi, Finnhub, Tiingo, CoinGecko, Central Bank, CVM, Pluggy)
+  services/          use cases shared by the screens and the connector
+  mcp/               tool definitions and authentication
+  jobs/              collection jobs (each step isolated: if one source fails, the others keep going)
+  db/                Drizzle schema
+drizzle/             SQL migrations (applied automatically on every deploy)
+tests/               tests with an in-memory Postgres, no internet needed
 ```
 
-## Integração com o Claude (MCP)
+## Claude integration (MCP)
 
-O Kubo expõe um servidor [Model Context Protocol](https://modelcontextprotocol.io) em `/api/mcp`. Dentro de um Projeto no Claude, comandos simples viram fluxos completos:
+Kubo exposes a [Model Context Protocol](https://modelcontextprotocol.io) server at `/api/mcp`. Inside a Claude Project, short commands become complete workflows:
 
-| Comando no Claude | O que acontece |
+| Command in Claude | What happens |
 |---|---|
-| **"briefing da semana"** | Lê panorama, notícias e carteira → classifica cada notícia → salva mapa do mercado + resumo com fontes |
-| **"analisa WEGE3"** | Lê posição e proventos, pesquisa fontes oficiais → salva um memo em 4 partes: dados · ponto forte e fraco · o que pode mudar · o que não sabemos |
-| **"ideias para o aporte"** | Compara carteira com as metas do perfil → salva 2 a 4 ideias *para estudar*, cada uma com risco principal, pergunta em aberto e validade |
-| **"refazer perfil"** | Conduz o teste de perfil de investidor → salva perfil e metas por classe (somando 100%) |
+| **"weekly briefing"** | Reads market overview, news and portfolio → triages each news item → saves a market map + summary with sources |
+| **"analyze WEGE3"** | Reads the position and dividends, researches official sources → saves a 4-part memo: data · strengths and weaknesses · what could change · what we don't know |
+| **"ideas for the contribution"** | Compares the portfolio with the profile's targets → saves 2 to 4 ideas *to research*, each with its main risk, an open question and an expiry date |
+| **"redo profile"** | Runs the investor profile questionnaire → saves the profile and per-class targets (adding up to 100%) |
 
 <details>
-<summary><b>As 14 ferramentas do conector</b></summary>
+<summary><b>The connector's 14 tools</b></summary>
 
-| Leitura | Escrita |
+| Read | Write |
 |---|---|
-| `kubo_resumo_carteira` posições, valor e distribuição | `kubo_salvar_briefing` mapa do mercado e resumo |
-| `kubo_plano_aportes` lacunas e plano sem vender | `kubo_salvar_triagem` manter / observar / ignorar |
-| `kubo_gastos_mes` resumo, fixos e transações | `kubo_salvar_memo` memo de ativo (exatamente 4 partes) |
-| `kubo_aportes` aportes do ano | `kubo_salvar_ideias` ideias para estudar |
-| `kubo_panorama_mercado` Ibovespa, S&P 500, Selic, dólar, IPCA | `kubo_salvar_perfil` perfil e metas (somam 100%) |
-| `kubo_noticias` CVM e Finnhub dos ativos acompanhados | `kubo_salvar_resposta` resposta para a aba Conversa |
-| `kubo_proventos` dividendos, JCP e rendimentos | |
-| `kubo_perfil_atual` perfil e metas | |
+| `kubo_resumo_carteira` positions, value and allocation | `kubo_salvar_briefing` market map and summary |
+| `kubo_plano_aportes` gaps and a no-selling plan | `kubo_salvar_triagem` keep / watch / ignore |
+| `kubo_gastos_mes` summary, recurring bills and transactions | `kubo_salvar_memo` asset memo (exactly 4 parts) |
+| `kubo_aportes` contributions this year | `kubo_salvar_ideias` ideas to research |
+| `kubo_panorama_mercado` Ibovespa, S&P 500, Selic, USD/BRL, IPCA | `kubo_salvar_perfil` profile and targets (sum to 100%) |
+| `kubo_noticias` CVM and Finnhub news for tracked assets | `kubo_salvar_resposta` answer for the Conversation tab |
+| `kubo_proventos` dividends and REIT distributions | |
+| `kubo_perfil_atual` profile and targets | |
 
 </details>
 
-O app nunca lê o histórico do Claude: ele só mostra o que o Claude **salvou** pelo conector, sempre com data e validade. A aba *Conversa* é um espelho dessas respostas, com um botão para continuar no Claude.
+The app never reads Claude's chat history: it only shows what Claude **saved** through the connector, always with a date and an expiry. The *Conversation* tab mirrors those answers, with a button to continue in Claude.
 
-## Decisões de engenharia
+## Engineering decisions
 
-- **Custo zero como requisito.** Vercel Hobby, Neon Free e só APIs com plano gratuito. Quando um limite estoura, esses planos recusam em vez de cobrar; o app trata `429` com `Retry-After`, cache e aviso na interface.
-- **Cache por tipo de mercado.** Cotações da B3 ficam 15 min em cache, dos EUA 1 min, e 6 h fora do pregão. A brapi gratuita aceita 1 ativo e 1 requisição por vez, então as chamadas são feitas em sequência.
-- **Coletas resilientes.** O cron diário roda etapas isoladas (Banco Central, cotações, históricos, notícias, proventos) e grava o resultado de cada uma; uma fonte fora do ar não derruba as outras. Uma rotina de limpeza mantém o banco dentro de 1 GB.
-- **Conector com OAuth 2.1.** Registro dinâmico de cliente, PKCE e tokens guardados só como hash, para funcionar com conectores personalizados do Claude sem depender de cabeçalho fixo.
-- **Acesso por PIN.** 5 erros bloqueiam por 15 min, e cada novo bloqueio dobra o tempo (até 24 h); sessão de 30 dias e bloqueio por inatividade.
-- **A edição do usuário vence.** Renomear ou recategorizar um lançamento nunca é sobrescrito pela próxima sincronização do Open Finance.
-- **Domínio separado da infraestrutura.** As regras de carteira, rebalanceamento e gastos são funções puras em `src/domain`, testadas sem banco nem rede.
-- **Testes sem internet.** Mais de 60 testes com Vitest e Postgres em memória (PGlite), incluindo o conector MCP ponta a ponta e as fontes com respostas gravadas.
-- **Fontes oficiais primeiro.** Indicadores do Banco Central, comunicados da CVM e filings da SEC; endpoints não oficiais (como Yahoo Finance) foram descartados.
+- **Zero cost as a requirement.** Vercel Hobby, Neon Free and only APIs with a free tier. When a limit is hit, these plans refuse instead of charging; the app handles `429` with `Retry-After`, caching and a notice in the UI.
+- **Caching by market.** B3 quotes are cached for 15 min, US quotes for 1 min, and 6 h outside trading hours. The free brapi tier allows 1 symbol and 1 request at a time, so calls run sequentially.
+- **Resilient jobs.** The daily cron runs isolated steps (Central Bank, quotes, price history, news, dividends) and records the result of each; one source going down doesn't take the others with it. A cleanup job keeps the database under 1 GB.
+- **OAuth 2.1 connector.** Dynamic client registration, PKCE and tokens stored only as hashes, so it works with Claude's custom connectors without relying on a fixed header.
+- **PIN access.** 5 wrong attempts lock the app for 15 min, and each new lockout doubles the wait (up to 24 h); 30-day sessions and an idle lock.
+- **User edits win.** Renaming or recategorizing a transaction is never overwritten by the next Open Finance sync.
+- **Domain separated from infrastructure.** Portfolio, rebalancing and spending rules are pure functions in `src/domain`, tested without a database or network.
+- **Tests without internet.** Over 60 tests with Vitest and an in-memory Postgres (PGlite), including the MCP connector end to end and data sources with recorded responses.
+- **Official sources first.** Central Bank indicators, CVM filings and SEC data; unofficial endpoints (such as Yahoo Finance) were dropped.
 
-## Stack e fontes de dados
+## Stack and data sources
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |---|---|
-| Front-end e API | Next.js 16 (App Router), React 19, TypeScript |
-| Banco | Postgres (Neon) com Drizzle ORM e migrações automáticas no deploy |
-| IA | Servidor MCP (`mcp-handler` + MCP SDK), consumido pelo Claude |
-| Hospedagem | Vercel (cron diário) + GitHub Actions (janelas de notícias) |
-| Testes | Vitest + PGlite |
+| Front end and API | Next.js 16 (App Router), React 19, TypeScript |
+| Database | Postgres (Neon) with Drizzle ORM and automatic migrations on deploy |
+| AI | MCP server (`mcp-handler` + MCP SDK), used by Claude |
+| Hosting | Vercel (daily cron) + GitHub Actions (news windows) |
+| Tests | Vitest + PGlite |
 
-| Dado | Fonte |
+| Data | Source |
 |---|---|
-| Ações, FIIs, ETFs e BDRs da B3, proventos | brapi.dev |
-| Cotações e notícias dos EUA | Finnhub |
-| Histórico dos EUA | Tiingo |
-| Cripto | CoinGecko |
-| Selic, CDI, IPCA, dólar | Banco Central (SGS) |
-| Fatos relevantes e comunicados | CVM Dados Abertos |
-| Contas, cartões e transações | Pluggy (Open Finance) + OFX/CSV |
+| B3 stocks, REITs, ETFs and BDRs, dividends | brapi.dev |
+| US quotes and news | Finnhub |
+| US price history | Tiingo |
+| Crypto | CoinGecko |
+| Selic, CDI, IPCA, USD/BRL | Central Bank of Brazil (SGS) |
+| Material facts and announcements | CVM Open Data |
+| Accounts, cards and transactions | Pluggy (Open Finance) + OFX/CSV |
 
 ## Design
 
-A identidade visual foi criada junto com o produto: um cubo isométrico como marca e a paleta **Grafite & Lima**, pensada para valores financeiros lidos de relance.
+The visual identity was created alongside the product: an isometric cube as the logo and the **Graphite & Lime** palette, built so financial figures can be read at a glance.
 
-| Cor | Uso |
+| Color | Use |
 |---|---|
-| ![#0F1114](https://placehold.co/16x16/0F1114/0F1114.png) `#0F1114` Grafite | Fundo |
-| ![#1A1D22](https://placehold.co/16x16/1A1D22/1A1D22.png) `#1A1D22` Carvão | Cartões |
-| ![#C5F23A](https://placehold.co/16x16/C5F23A/C5F23A.png) `#C5F23A` Lima | Ação principal e valores positivos |
-| ![#FF6B7F](https://placehold.co/16x16/FF6B7F/FF6B7F.png) `#FF6B7F` Coral | Negativos e gastos |
-| ![#8C9BFF](https://placehold.co/16x16/8C9BFF/8C9BFF.png) `#8C9BFF` Lavanda | Segunda série dos gráficos |
-| ![#F2B544](https://placehold.co/16x16/F2B544/F2B544.png) `#F2B544` Âmbar | Metas e avisos |
+| ![#0F1114](https://placehold.co/16x16/0F1114/0F1114.png) `#0F1114` Graphite | Background |
+| ![#1A1D22](https://placehold.co/16x16/1A1D22/1A1D22.png) `#1A1D22` Charcoal | Cards |
+| ![#C5F23A](https://placehold.co/16x16/C5F23A/C5F23A.png) `#C5F23A` Lime | Primary action and positive values |
+| ![#FF6B7F](https://placehold.co/16x16/FF6B7F/FF6B7F.png) `#FF6B7F` Coral | Negative values and spending |
+| ![#8C9BFF](https://placehold.co/16x16/8C9BFF/8C9BFF.png) `#8C9BFF` Lavender | Second chart series |
+| ![#F2B544](https://placehold.co/16x16/F2B544/F2B544.png) `#F2B544` Amber | Targets and warnings |
 
-Tipografia em **Outfit** (títulos e saldos) e **Inter** (interface, com algarismos tabulares). Cartões com cantos de 24 a 32 px, pílulas, botões de ação circulares e gráficos de área com curva suave. Tema claro com contraste revisado para acessibilidade.
+Typography is **Outfit** (headings and balances) and **Inter** (interface, with tabular figures). Cards with 24 to 32 px corners, pills, circular action buttons and smooth area charts. The light theme has contrast tuned for accessibility.
 
-## Status e próximos passos
+## Status and roadmap
 
-O Kubo está em uso diário como app pessoal (um único usuário), em produção na Vercel.
+Kubo is in daily use as a personal app (single user), in production on Vercel.
 
-- [x] Acesso por PIN e conector do Claude com OAuth 2.1
-- [x] Cotações com cache, coletas agendadas e limpeza automática
-- [x] Open Finance (Pluggy) e importação OFX/CSV
-- [x] Telas: Início, Carteira, Ativos, Análise do ativo, Comparar, Gastos, Gastos fixos, Aportes, Aprender, Conversa e Perfil
-- [ ] Demonstrações da CVM (DFP/ITR) e comparação com concorrentes no memo
-- [ ] Dados do Tesouro Direto
-- [ ] Versão de demonstração pública com dados fictícios
+- [x] PIN access and Claude connector with OAuth 2.1
+- [x] Cached quotes, scheduled jobs and automatic cleanup
+- [x] Open Finance (Pluggy) and OFX/CSV import
+- [x] Screens: Home, Portfolio, Assets, Asset analysis, Compare, Spending, Recurring bills, Contributions, Learn, Conversation and Profile
+- [ ] CVM financial statements (DFP/ITR) and peer comparison in the memo
+- [ ] Brazilian Treasury Direct data
+- [ ] Public demo with fictional data
 
-> O código-fonte fica em um repositório privado porque o app guarda dados financeiros reais. Posso mostrar o código e uma demonstração com dados fictícios em uma conversa.
+> The source code lives in a private repository because the app stores real financial data. I'm happy to walk through the code and a demo with fictional data in a call.
 
-## Autor
+## Author
 
-Feito por **Carlos** · [GitHub](https://github.com/cxrlos99leonel)
+Built by **Carlos** · [GitHub](https://github.com/cxrlos99leonel)
